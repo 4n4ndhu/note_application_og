@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-
+import 'package:intl/intl.dart'; // Import the intl package
 import 'package:note_application_og/controller/home_screen_controller.dart';
 import 'package:note_application_og/utils/color_constants.dart';
 
@@ -26,78 +26,92 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return SafeArea(
       child: Scaffold(
-          appBar: AppBar(
-            title: Text(
-              "Notes",
-              style: TextStyle(fontWeight: FontWeight.bold),
-            ),
+        appBar: AppBar(
+          title: Text(
+            "Notes",
+            style: TextStyle(fontWeight: FontWeight.bold),
           ),
-          floatingActionButton: FloatingActionButton(
-            child: Icon(Icons.edit),
-            onPressed: () {
-              _customeBottomSheet(
-                context,
-              );
-            },
-          ),
-          body: ListView.separated(
-              padding: EdgeInsets.all(8),
-              itemBuilder: (context, index) => InkWell(
-                    onTap: () async {
-                      _customeBottomSheet(context,
-                          isEdit: true,
-                          name: HomeScreenController.employeeDataList[index]
-                              ["note"],
-                          id: HomeScreenController.employeeDataList[index]
-                              ["id"]);
-                    },
-                    child: Container(
-                      padding: EdgeInsets.all(10),
-                      decoration: BoxDecoration(
-                        color: ColorConstants.primaryPurple,
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                      height: 120,
-                      width: double.infinity,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Row(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Expanded(
-                                child: SizedBox(
-                                  child: Text(
-                                    HomeScreenController.employeeDataList[index]
-                                        ["note"],
-                                    maxLines: 3,
-                                    overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
-                                        fontWeight: FontWeight.w600,
-                                        fontSize: 18),
-                                  ),
-                                ),
-                              ),
-                              IconButton(
-                                  onPressed: () async {
-                                    await HomeScreenController.removeEmployee(
-                                        HomeScreenController
-                                            .employeeDataList[index]["id"]);
-                                    setState(() {});
-                                  },
-                                  icon: Icon(Icons.delete))
-                            ],
+        ),
+        floatingActionButton: FloatingActionButton(
+          child: Icon(Icons.edit),
+          onPressed: () {
+            _customeBottomSheet(
+              context,
+            );
+          },
+        ),
+        body: ListView.separated(
+          padding: EdgeInsets.all(8),
+          itemBuilder: (context, index) {
+            // Get the timestamp from employeeDataList
+            String timestamp =
+                HomeScreenController.employeeDataList[index]["timestamp"];
+            DateTime dateTime = DateTime.parse(timestamp)
+                .toLocal(); // Convert UTC to local time
+
+            // Format the time (customize the format as needed)
+            String formattedTime = DateFormat('hh:mm a').format(dateTime);
+
+            return InkWell(
+              onTap: () async {
+                _customeBottomSheet(context,
+                    isEdit: true,
+                    name: HomeScreenController.employeeDataList[index]["note"],
+                    id: HomeScreenController.employeeDataList[index]["id"]);
+              },
+              child: Container(
+                padding: EdgeInsets.all(10),
+                decoration: BoxDecoration(
+                  color: ColorConstants.primaryPurple,
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                height: 120,
+                width: double.infinity,
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: SizedBox(
+                            child: Text(
+                              HomeScreenController.employeeDataList[index]
+                                  ["note"],
+                              maxLines: 3,
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  fontWeight: FontWeight.w600, fontSize: 18),
+                            ),
                           ),
-                          Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [SizedBox(), Text("12:02")],
-                          )
-                        ],
-                      ),
+                        ),
+                        IconButton(
+                          onPressed: () async {
+                            await HomeScreenController.removeEmployee(
+                                HomeScreenController.employeeDataList[index]
+                                    ["id"]);
+                            setState(() {});
+                          },
+                          icon: Icon(Icons.delete),
+                        ),
+                      ],
                     ),
-                  ),
-              separatorBuilder: (context, index) => Divider(),
-              itemCount: HomeScreenController.employeeDataList.length)),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        SizedBox(),
+                        Text(formattedTime), // Display the formatted timestamp
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            );
+          },
+          separatorBuilder: (context, index) => Divider(),
+          itemCount: HomeScreenController.employeeDataList.length,
+        ),
+      ),
     );
   }
 
@@ -106,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
     TextEditingController nameController =
         TextEditingController(text: name ?? "");
 
-    if (isEdit = true) {
+    if (isEdit) {
       nameController.text == name;
     }
 
@@ -136,19 +150,10 @@ class _HomeScreenState extends State<HomeScreen> {
                           horizontal: 10, vertical: 10),
                       hintText: "Add a note",
                       hintStyle: TextStyle(
-                          color: Colors.grey.shade500,
-                          fontSize: 20,
-                          fontWeight: FontWeight.normal),
-                      // enabledBorder: OutlineInputBorder(
-                      //     borderRadius: BorderRadius.circular(10),
-                      //     borderSide: BorderSide(
-                      //       color: Colors.grey.shade400,
-                      //     )),
-                      // focusedBorder: OutlineInputBorder(
-                      //     borderRadius: BorderRadius.circular(10),
-                      //     borderSide: const BorderSide(
-                      //       color: Color(0xff1a75d2),
-                      //     )),
+                        color: Colors.grey.shade500,
+                        fontSize: 20,
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
                   ),
                 ),
@@ -156,36 +161,42 @@ class _HomeScreenState extends State<HomeScreen> {
                 Row(
                   children: [
                     Expanded(
-                        child: ElevatedButton(
-                            onPressed: () async {
-                              if (id == null) {
-                                await HomeScreenController.addEmployee(
-                                  note: nameController.text,
-                                );
-                                setState(() {});
-                                Navigator.pop(context);
-                              } else {
-                                await HomeScreenController.updateEmployee(
-                                    nameController.text, id);
-                                setState(() {});
-                                Navigator.pop(context);
-                              }
-                            },
-                            child: const Text("Save"))),
-                    const SizedBox(
-                      width: 20,
+                      child: ElevatedButton(
+                        onPressed: () async {
+                          String timestamp = DateTime.now()
+                              .toUtc()
+                              .toString(); // Store UTC time
+                          if (id == null) {
+                            await HomeScreenController.addEmployee(
+                              note: nameController.text,
+                              timestamp: timestamp,
+                            );
+                            setState(() {});
+                            Navigator.pop(context);
+                          } else {
+                            await HomeScreenController.updateEmployee(
+                              nameController.text,
+                              id,
+                            );
+                            setState(() {});
+                            Navigator.pop(context);
+                          }
+                        },
+                        child: const Text("Save"),
+                      ),
                     ),
+                    const SizedBox(width: 20),
                     Expanded(
-                        child: ElevatedButton(
-                            onPressed: () {
-                              Navigator.pop(context);
-                            },
-                            child: const Text("Cancel"))),
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pop(context);
+                        },
+                        child: const Text("Cancel"),
+                      ),
+                    ),
                   ],
                 ),
-                const SizedBox(
-                  height: 20,
-                )
+                const SizedBox(height: 20),
               ],
             ),
           ),
