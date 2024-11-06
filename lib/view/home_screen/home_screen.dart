@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import 'package:note_application_og/controller/home_screen_controller.dart';
+import 'package:note_application_og/utils/color_constants.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -53,34 +54,44 @@ class _HomeScreenState extends State<HomeScreen> {
                     child: Container(
                       padding: EdgeInsets.all(10),
                       decoration: BoxDecoration(
-                        color: Colors.purple,
+                        color: ColorConstants.primaryPurple,
                         borderRadius: BorderRadius.circular(10),
                       ),
                       height: 120,
                       width: double.infinity,
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.start,
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          Expanded(
-                            child: SizedBox(
-                              child: Text(
-                                HomeScreenController.employeeDataList[index]
-                                    ["note"],
-                                maxLines: 3,
-                                overflow: TextOverflow.ellipsis,
-                                style: TextStyle(
-                                    fontWeight: FontWeight.w600, fontSize: 18),
-                              ),
-                            ),
-                          ),
-                          IconButton(
-                              onPressed: () async {
-                                await HomeScreenController.removeEmployee(
+                          Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: SizedBox(
+                                  child: Text(
                                     HomeScreenController.employeeDataList[index]
-                                        ["id"]);
-                                setState(() {});
-                              },
-                              icon: Icon(Icons.delete))
+                                        ["note"],
+                                    maxLines: 3,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.w600,
+                                        fontSize: 18),
+                                  ),
+                                ),
+                              ),
+                              IconButton(
+                                  onPressed: () async {
+                                    await HomeScreenController.removeEmployee(
+                                        HomeScreenController
+                                            .employeeDataList[index]["id"]);
+                                    setState(() {});
+                                  },
+                                  icon: Icon(Icons.delete))
+                            ],
+                          ),
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [SizedBox(), Text("12:02")],
+                          )
                         ],
                       ),
                     ),
@@ -100,74 +111,83 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     return showModalBottomSheet(
+      isScrollControlled: true,
       backgroundColor: Colors.black,
       context: context,
       builder: (context) => SizedBox(
         width: double.infinity,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              const SizedBox(height: 25),
-              TextFormField(
-                controller: nameController,
-                style: TextStyle(color: Colors.white),
-                decoration: InputDecoration(
-                  contentPadding:
-                      const EdgeInsets.symmetric(horizontal: 15, vertical: 10),
-                  hintText: "Name",
-                  hintStyle: TextStyle(
-                      color: Colors.grey.shade500,
-                      fontSize: 16,
-                      fontWeight: FontWeight.normal),
-                  enabledBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide(
-                        color: Colors.grey.shade400,
-                      )),
-                  focusedBorder: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(10),
-                      borderSide: const BorderSide(
-                        color: Color(0xff1a75d2),
-                      )),
-                ),
-              ),
-              const SizedBox(height: 25),
-              Row(
-                children: [
-                  Expanded(
-                      child: ElevatedButton(
-                          onPressed: () async {
-                            if (id == null) {
-                              await HomeScreenController.addEmployee(
-                                note: nameController.text,
-                              );
-                              setState(() {});
-                              Navigator.pop(context);
-                            } else {
-                              await HomeScreenController.updateEmployee(
-                                  nameController.text, id);
-                              setState(() {});
-                              Navigator.pop(context);
-                            }
-                          },
-                          child: const Text("Save"))),
-                  const SizedBox(
-                    width: 20,
+          child: Container(
+            height: double.infinity,
+            child: Column(
+              mainAxisSize: MainAxisSize.max,
+              children: [
+                const SizedBox(height: 25),
+                Expanded(
+                  child: TextField(
+                    maxLines: null,
+                    minLines: null,
+                    expands: true,
+                    controller: nameController,
+                    style: TextStyle(color: Colors.white, fontSize: 20),
+                    decoration: InputDecoration(
+                      contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 10, vertical: 10),
+                      hintText: "Add a note",
+                      hintStyle: TextStyle(
+                          color: Colors.grey.shade500,
+                          fontSize: 20,
+                          fontWeight: FontWeight.normal),
+                      // enabledBorder: OutlineInputBorder(
+                      //     borderRadius: BorderRadius.circular(10),
+                      //     borderSide: BorderSide(
+                      //       color: Colors.grey.shade400,
+                      //     )),
+                      // focusedBorder: OutlineInputBorder(
+                      //     borderRadius: BorderRadius.circular(10),
+                      //     borderSide: const BorderSide(
+                      //       color: Color(0xff1a75d2),
+                      //     )),
+                    ),
                   ),
-                  Expanded(
-                      child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pop(context);
-                          },
-                          child: const Text("Cancel"))),
-                ],
-              ),
-              const SizedBox(
-                height: 20,
-              )
-            ],
+                ),
+                const SizedBox(height: 25),
+                Row(
+                  children: [
+                    Expanded(
+                        child: ElevatedButton(
+                            onPressed: () async {
+                              if (id == null) {
+                                await HomeScreenController.addEmployee(
+                                  note: nameController.text,
+                                );
+                                setState(() {});
+                                Navigator.pop(context);
+                              } else {
+                                await HomeScreenController.updateEmployee(
+                                    nameController.text, id);
+                                setState(() {});
+                                Navigator.pop(context);
+                              }
+                            },
+                            child: const Text("Save"))),
+                    const SizedBox(
+                      width: 20,
+                    ),
+                    Expanded(
+                        child: ElevatedButton(
+                            onPressed: () {
+                              Navigator.pop(context);
+                            },
+                            child: const Text("Cancel"))),
+                  ],
+                ),
+                const SizedBox(
+                  height: 20,
+                )
+              ],
+            ),
           ),
         ),
       ),
